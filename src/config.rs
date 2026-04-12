@@ -65,8 +65,6 @@ impl Config {
         .join(get_default_config_file_name())
       );
 
-    println!("{:?}", path_buf);
-
     let content_buf = fs::read(path_buf)
       .expect_with_status_code(
         "Couldn't read config file",
