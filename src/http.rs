@@ -5,7 +5,7 @@ const DEFAULT_RETRIES: u32 = 3;
 pub fn get_user_agent () -> String {
   let version = env!("CARGO_PKG_VERSION");
 
-  format!("Verzion/{} (Compatible; Minimal)", version)
+  format!("verzon/{} (Compatible; Minimal)", version)
 }
 
 pub fn get_retry_policy (retries: Option<u32>) -> ExponentialBackoff {

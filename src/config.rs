@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, str::FromStr};
 use once_cell::sync::{OnceCell};
 use serde::{Deserialize, Serialize};
 
-use crate::{args::Args, changelog::config::ChangelogConfig, conventions::config::ConventionConfig, git::tracking::GitTrackingRoot, log::LogLevel, metafile::config::Metafile, package::NAME, semver::config::SemVerConfig, std::{merge::Merge, panic::{EXIT_ERROR, EXIT_SUCCESS, ExpectWithStatusCode}}, webhooks::config::WebhookConfig};
+use crate::{args::Args, changelog::config::ChangelogConfig, conventions::config::ConventionConfig, git::tracking::GitTrackingRoot, log::LogLevel, metafile::config::Metafile, package::NAME, semver::config::SemVerConfig, std::{merge::Merge, panic::{EXIT_ERROR, EXIT_SUCCESS}}, webhooks::config::WebhookConfig};
 
 pub const DEFAULT_CONFIG_FILE_EXTENSION: &str = "json";
 pub const DEFAULT_CONFIG_FILE_BASE: &str = "config";
@@ -46,36 +46,23 @@ impl Config {
     CONFIG.get().expect("Could not retrieve config")
   }
 
-  pub fn from_args (args: &Args) -> Self {
+  pub fn from_args (args: &Args) -> Result<Self, String> {
     let path_buf = args.config.as_ref()
       .map(|v|
         PathBuf::from_str(&v)
-          .expect_with_status_code(
-            "Could not parse",
-            args.to_exit_code()
-          )
-      )
+      ).ok_or("Could not parse".to_string())?
       .unwrap_or(
         PathBuf::from_str(&args.get_cwd())
-        .expect_with_status_code(
-          "Could not parse cwd",
-          args.to_exit_code()
-        )
-        .join(get_default_config_dir())
-        .join(get_default_config_file_name())
+          .map_err(|_| "Could not parse cwd".to_string())?
+          .join(get_default_config_dir())
+          .join(get_default_config_file_name())
       );
 
     let content_buf = fs::read(path_buf)
-      .expect_with_status_code(
-        "Couldn't read config file",
-        args.to_exit_code()
-      );
+      .map_err(|_| "Couldn't read config file".to_string())?;
 
     serde_json::from_slice::<Config>(&content_buf)
-      .expect_with_status_code(
-        "Couldn't parse config file",
-        args.to_exit_code()
-      )
+      .map_err(|_| "Couldn't parse config file".to_string())
   }
 }
 

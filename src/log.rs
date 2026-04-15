@@ -18,19 +18,12 @@ pub enum LogLevel {
 }
 
 const DEFAULT_LOG_LEVEL: LogLevel = LogLevel::Info;
-
-#[allow(dead_code)]
 const ERROR_PREFIX: &str = "ERROR";
-#[allow(dead_code)]
 const WARN_PREFIX: &str = "WARN";
-#[allow(dead_code)]
 const INFO_PREFIX: &str = "INFO";
-#[allow(dead_code)]
 const DEBUG_PREFIX: &str = "DEBUG";
 
-#[allow(dead_code)]
-pub fn log_debug (value: &str) {
-  let config = Config::inject();
+pub fn log_debug_raw (value: &str, config: &Config) {
   let mut prefix = create_prefix(DEBUG_PREFIX);
 
   if config.colored.unwrap_or(true) {
@@ -50,7 +43,12 @@ pub fn log_debug (value: &str) {
   );
 }
 
-#[allow(dead_code)]
+pub fn log_debug (value: &str) {
+  let config = Config::inject();
+
+  log_debug_raw(value, config);
+}
+
 pub fn log_info (value: &str) {
   let config = Config::inject();
   let mut prefix = create_prefix(INFO_PREFIX);
@@ -72,13 +70,11 @@ pub fn log_info (value: &str) {
   );
 }
 
-#[allow(dead_code)]
-pub fn log_error (value: &str) {
-  let config = Config::inject();
-  let mut prefix = create_prefix(ERROR_PREFIX);
+pub fn log_raw_error (value: &str, config: &Config) {
+    let mut prefix = create_prefix(ERROR_PREFIX);
 
   if config.colored.unwrap_or(true) {
-    prefix = prefix.red().bold().to_string();
+    prefix = prefix.blue().bold().to_string();
   }
 
   let config_log_level = config.log_level.clone().unwrap_or(DEFAULT_LOG_LEVEL);
@@ -92,6 +88,13 @@ pub fn log_error (value: &str) {
     prefix,
     value
   );
+}
+
+
+pub fn log_error (value: &str) {
+  let config = Config::inject();
+
+  log_raw_error(value, config);
 }
 
 #[allow(dead_code)]
@@ -117,12 +120,12 @@ pub fn log_warn (value: &str) {
 }
 
 const LOGO: &str = r"
-                          .__               
-___  __ __________________|__| ____   ____  
-\  \/ // __ \_  __ \___   /  |/  _ \ /    \ 
+                          .__
+___  __ __________________|__| ____   ____
+\  \/ // __ \_  __ \___   /  |/  _ \ /    \
  \   /\  ___/|  | \//    /|  (  <_> )   |  \
   \_/  \___  >__|  /_____ \__|\____/|___|  /
-           \/            \/              \/ 
+           \/            \/              \/
 ";
 
 pub fn create_prefix (value: &str) -> String {
