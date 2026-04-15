@@ -119,14 +119,11 @@ pub fn log_warn (value: &str) {
   );
 }
 
-const LOGO: &str = r"
-                          .__
-___  __ __________________|__| ____   ____
-\  \/ // __ \_  __ \___   /  |/  _ \ /    \
- \   /\  ___/|  | \//    /|  (  <_> )   |  \
-  \_/  \___  >__|  /_____ \__|\____/|___|  /
-           \/            \/              \/
-";
+type RGB = (u8, u8, u8);
+
+pub const LOGO_ICON: &str = "▲";
+pub const BRAND_COLOR: RGB = (0x73, 0x00, 0xff);
+pub const MUTED_COLOR: RGB = (0x71, 0x71, 0x7a);
 
 pub fn create_prefix (value: &str) -> String {
   let time = Utc::now().to_rfc3339();
@@ -136,17 +133,20 @@ pub fn create_prefix (value: &str) -> String {
 
 pub fn print_header () {
   let config = Config::inject();
-  let mut logo = LOGO.to_string();
-  let mut version = env!("CARGO_PKG_VERSION").to_string();
+  let mut icon = LOGO_ICON.to_string();
+  let mut name = env!("CARGO_PKG_NAME").to_string();
+  let mut version = format!("v{}", env!("CARGO_PKG_VERSION")).to_string();
 
   if config.colored.unwrap_or(true) {
-    logo = logo.purple().bold().to_string();
-    version = format!(" {} ", version).on_purple().white().bold().to_string();
+    icon = icon.truecolor(BRAND_COLOR.0, BRAND_COLOR.1, BRAND_COLOR.2).to_string();
+    name = name.white().to_string();
+    version = version.truecolor(MUTED_COLOR.0, MUTED_COLOR.1, MUTED_COLOR.2).to_string();
   }
 
   println!(
-    "{}\n{}\n",
-    logo,
+    "{}{} {}\n",
+    icon,
+    name,
     version
   );
 }
