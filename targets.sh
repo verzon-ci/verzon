@@ -10,10 +10,14 @@ targets=(
 )
 
 windows_ending=".exe"
+checksum_ending=".sha256"
 name="verzon"
 
 rm -r dist
 mkdir -p dist
+
+# Clean previous build artifacts to avoid GLIBC version conflicts
+cargo clean
 
 for target in "${targets[@]}"; do
   echo "Compiling for $target"
@@ -21,11 +25,22 @@ for target in "${targets[@]}"; do
 
   path="target/$target/release/$name"
 
+
   if [ -f $path$windows_ending ]; then
-    mv $path$windows_ending dist/$name-$target$windows_ending
+    resolved_path=$path$windows_ending
+
+    checksum=$(sha256sum $resolved_path | cut -d ' ' -f 1)
+    echo $checksum > dist/$name-$target$windows_ending$checksum_ending
+
+    mv $resolved_path dist/$name-$target$windows_ending
+    continue
   fi
 
   if [ -f $path ]; then
+    checksum=$(sha256sum $path | cut -d ' ' -f 1)
+    echo $checksum > dist/$name-$target$checksum_ending
+
     mv $path dist/$name-$target
+    continue
   fi
 done
