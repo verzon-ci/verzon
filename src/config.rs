@@ -47,18 +47,19 @@ impl Config {
   }
 
   pub fn from_args (args: &Args) -> Result<Self, String> {
-    let path_buf = args.config.as_ref()
+    let mut path_buf = args.config.as_ref()
       .map(|v|
-        PathBuf::from_str(&v)
-      ).ok_or("Could not parse".to_string())?
-      .unwrap_or(
-        PathBuf::from_str(&args.get_cwd())
+        PathBuf::from_str(&v).ok()
+      ).flatten();
+
+    if path_buf.is_none() {
+      path_buf = Some(PathBuf::from_str(&args.get_cwd())
           .map_err(|_| "Could not parse cwd".to_string())?
           .join(get_default_config_dir())
-          .join(get_default_config_file_name())
-      );
+          .join(get_default_config_file_name()))
+    }
 
-    let content_buf = fs::read(path_buf)
+    let content_buf = fs::read(path_buf.ok_or("Couldn't get config path")?)
       .map_err(|_| "Couldn't read config file".to_string())?;
 
     serde_json::from_slice::<Config>(&content_buf)
