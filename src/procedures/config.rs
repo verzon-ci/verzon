@@ -9,7 +9,7 @@ pub fn process_config () {
 
   match config {
     Ok(inner_config) => {
-      args_config = args_config.merge(inner_config);
+      args_config = inner_config.merge(args_config);
     },
     Err(err) => {
       log_debug_raw(

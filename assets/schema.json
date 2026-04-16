@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "verzon",
+  "description": "Configuration for verzon",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Flag to enable/disable this config",
+      "default": true
+    },
+    "colored": {
+      "type": "boolean",
+      "description": "Flag to enable/disable colored output",
+      "default": true
+    },
+    "graceful": {
+      "type": "boolean",
+      "description": "Flag to decide if program should always exit with success (exit code 0)",
+      "default": false
+    },
+    "cwd": {
+      "type": "string",
+      "description": "Override the current working directory"
+    },
+    "references": {
+      "type": "array",
+      "description": "Path for additional configs to handle",
+      "items": {
+        "type": "string",
+        "description": "Path to an additional config"
+      }
+    },
+    "log_level": {
+      "type": "string",
+      "description": "Level of logs which will appear where none prints nothing and debug prints everything",
+      "enum": [
+        "none",
+        "error",
+        "warn",
+        "info",
+        "debug"
+      ]
+    },
+    "semver": {
+      "type": "object",
+      "properties": {
+        "semver": {
+          "type": "string",
+          "description": "Force a specifig SemVer (e.g. 1.2.0)"
+        },
+        "format": {
+          "type": "string",
+          "description": "Format SemVer (e.g. 'v{}' to add always add 'v' to the start)"
+        },
+        "major": {
+          "type": "string",
+          "description": "Force SemVer major"
+        },
+        "minor": {
+          "type": "string",
+          "description": "Force SemVer minor"
+        },
+        "patch": {
+          "type": "string",
+          "description": "Force SemVer patch"
+        },
+        "pre_release": {
+          "type": "string",
+          "description": "Force SemVer pre-release (e.g. 'alpha' or 'rc')"
+        },
+        "iteration": {
+          "type": "string",
+          "description": "Force SemVer iteration"
+        },
+        "metadata": {
+          "type": "string",
+          "description": "Force SemVer metadata"
+        }
+      }
+    },
+    "metafiles": {
+      "type": "array",
+      "description": "Metafiles (e.g. package.json, pom.xml)",
+      "items": {
+        "type": "object",
+        "description": "Configuration of a metafile",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type to identify a metafile",
+            "enum": [
+              "java",
+              "node",
+              "plain"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to metafile"
+          },
+          "tracking": {
+            "$ref": "#/$defs/tracking"
+          }
+        }
+      }
+    },
+    "convention": {
+      "description": "Commit convention",
+      "type": "string",
+      "enum": [
+        "conventional"
+      ]
+    },
+    "changelog": {
+      "type": "string",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Flag to enable/disable the changelog generation",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the generated changelog",
+          "enum": [
+            "simple",
+            "template"
+          ],
+          "default": "simple"
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to save the generated changelog",
+          "default": "./CHANGELOG.md"
+        },
+        "tracking": {
+          "$ref": "#/$defs/tracking"
+        },
+        "template_path": {
+          "type": "string",
+          "description": "Path to a changelog template"
+        },
+        "use_in_webhooks": {
+          "type": "boolean",
+          "description": "Flag to enable/disable that changelogs are forwarded to every webhook",
+          "default": true
+        }
+      }
+    },
+    "webhooks": {
+      "type": "array",
+      "description": "Config of webhook to call (e.g. GitHub or Custom)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type to identify the webhook",
+            "enum": [
+              "custom",
+              "github",
+              "gitlab"
+            ]
+          },
+          "origin": {
+            "type": "string",
+            "description": "Git origin that'll be used to parse the endpoint url",
+            "default": "origin"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Flag to enable/disable a webhook",
+            "default": false
+          },
+          "url": {
+            "type": "string",
+            "description": "Override the url to a webhook"
+          },
+          "token": {
+            "type": "string",
+            "description": "Token, that'll be used for authorisation in depending on the webhook type"
+          },
+          "token_env": {
+            "type": "string",
+            "description": "Name of an environment var, that'ld be used as a token"
+          },
+          "http_retries": {
+            "type": "integer",
+            "description": "Max. count of retries before a HTTP request is considered failing",
+            "default": 3
+          },
+          "http_timeout": {
+            "type": "integer",
+            "description": "Max. milliseconds to wait before a HTTP request is considered failing"
+          }
+        }
+      }
+    },
+    "tracking": {
+      "type": "object",
+      "description": "Optional synchronization with Git remote",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Flag to enable/disable synchronization"
+        },
+        "origins": {
+          "type": "array",
+          "description": "Origins, that'ld be synchronized",
+          "items": {
+            "type": "string",
+            "description": "Origin, that'ld be synchronized"
+          }
+        },
+        "message": {
+          "type": "string",
+          "description": "Override commit message when commiting changes"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "tracking": {
+      "type": "object",
+      "description": "Optional synchronization with Git remote",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Flag to enable/disable synchronization",
+          "default": false
+        },
+        "strategy": {
+          "type": "string",
+          "description": "Strategy to apply when synchronizing",
+          "enum": [
+            "batch",
+            "individual"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "description": "Override commit message when commiting changes"
+        }
+      }
+    }
+  }
+}
