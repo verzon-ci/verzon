@@ -1,5 +1,11 @@
 <div align="center">
-  <img alt="Logo" height="192" src="https://raw.githubusercontent.com/verzon-ci/.github/refs/heads/main/profile/logo-white.svg" />
+  <picture>
+    <source
+      srcset="https://raw.githubusercontent.com/verzon-ci/.github/refs/heads/main/profile/logo-white.svg"
+      media="(prefers-color-scheme: dark)"
+    />
+    <img height="192" alt="verzon" src="https://raw.githubusercontent.com/verzon-ci/.github/refs/heads/main/profile/logo-black.svg"
+  </picture>
 
   _The only release tool you'll ever need, built in Rust for speed and reliability!_
 
