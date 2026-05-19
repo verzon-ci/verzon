@@ -1,14 +1,15 @@
 use std::env;
 use serde::{Deserialize, Serialize};
 
-use crate::{config::Config, git::remote::get_remote_url, std::command::CommandOptions, webhooks::{custom, github, gitlab}};
+use crate::{config::Config, git::remote::get_remote_url, std::command::CommandOptions, webhooks::{custom, gitea, github, gitlab}};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum WebhookType {
   Custom,
   GitHub,
-  GitLab
+  GitLab,
+  Gitea
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -79,6 +80,7 @@ impl WebhookItemConfig {
         Some(WebhookType::GitHub) => github::config::TOKEN_ENV,
         Some(WebhookType::GitLab) => gitlab::config::TOKEN_ENV,
         Some(WebhookType::Custom) => custom::config::TOKEN_ENV,
+        Some(WebhookType::Gitea) => gitea::config::TOKEN_ENV,
         None => return None
       }
     };

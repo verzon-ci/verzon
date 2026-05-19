@@ -63,7 +63,7 @@ impl Config {
       .map_err(|_| "Couldn't read config file".to_string())?;
 
     serde_json::from_slice::<Config>(&content_buf)
-      .map_err(|_| "Couldn't parse config file".to_string())
+      .map_err(|err| format!("{}\n{:?}", "Couldn't parse config file", err))
   }
 }
 

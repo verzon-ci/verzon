@@ -1,11 +1,11 @@
 use reqwest_retry::policies::ExponentialBackoff;
 
+use crate::package::{NAME, VERSION};
+
 const DEFAULT_RETRIES: u32 = 3;
 
 pub fn get_user_agent () -> String {
-  let version = env!("CARGO_PKG_VERSION");
-
-  format!("verzon/{} (Compatible; Minimal)", version)
+  format!("{}/{} (Compatible; Minimal)", NAME, VERSION)
 }
 
 pub fn get_retry_policy (retries: Option<u32>) -> ExponentialBackoff {

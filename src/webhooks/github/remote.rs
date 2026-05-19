@@ -2,6 +2,8 @@ use std::path::Path;
 
 use url::Url;
 
+use crate::package::NAME;
+
 #[derive(Debug)]
 pub struct GitHubRemote {
   #[allow(dead_code)]
@@ -19,7 +21,7 @@ impl GitHubRemote {
       url.set_scheme("https").ok();
     }
 
-    url.set_username("verzion").ok();
+    url.set_username(NAME).ok();
     url.set_password(token.as_deref()).ok();
 
     url.to_string()
@@ -30,13 +32,7 @@ impl TryFrom<&str> for GitHubRemote {
   type Error = String;
 
   fn try_from(value: &str) -> Result<Self, Self::Error> {
-    let url = Url::parse(&value);
-
-    if url.is_err() {
-      return Err("URL could not be parsed".to_string());
-    }
-
-    let url = url.unwrap();
+    let url = Url::parse(&value).map_err(|_| "URL could not be parsed".to_string())?;
     let path = Path::new(url.path());
     let mut owner = None;
     let mut repository = None;

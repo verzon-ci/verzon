@@ -1,4 +1,4 @@
-use crate::{config::{Config, ToExitCode}, log::log_debug, semver::core::SemVer, std::panic::ExpectWithStatusCode, webhooks::{config::{WebhookItemConfig, WebhookType}, custom, github, gitlab}};
+use crate::{config::{Config, ToExitCode}, log::log_debug, semver::core::SemVer, std::panic::ExpectWithStatusCode, webhooks::{config::{WebhookItemConfig, WebhookType}, custom, gitea, github, gitlab}};
 
 async fn handle_webhook_item (
   webhook_item: &WebhookItemConfig,
@@ -22,6 +22,13 @@ async fn handle_webhook_item (
     },
     WebhookType::GitHub => {
       github::release::create_release(
+        webhook_item,
+        semver,
+        changelog
+      ).await;
+    },
+    WebhookType::Gitea => {
+      gitea::release::create_release(
         webhook_item,
         semver,
         changelog
@@ -57,4 +64,3 @@ pub async fn handle_webhook (
     handle_webhook_item(&webhook_item, semver, changelog).await;
   }
 }
-

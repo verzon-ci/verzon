@@ -1,0 +1,22 @@
+use crate::{config::{Config, ToExitCode}, semver::core::SemVer, std::panic::ExpectWithStatusCode, webhooks::{config::WebhookItemConfig, gitea::{http::post_create_release, remote::GiteaRemote}}};
+
+pub async fn create_release (
+    webhook_item: &WebhookItemConfig,
+    semver: &SemVer,
+    changelog: &Option<String>
+) {
+  let config = Config::inject();
+
+  let remote_url = webhook_item.get_url().expect_with_status_code("Remote URL absent", config.to_exit_code());
+
+  let gitea_remote = GiteaRemote::try_from(
+    remote_url.as_ref()
+  ).expect_with_status_code("Gitea remote could not be parsed", config.to_exit_code());
+
+  post_create_release(
+    webhook_item,
+    &gitea_remote,
+    semver,
+    changelog
+  ).await;
+}

@@ -7,7 +7,7 @@ pub const DEFAULT_TEMPLATE_PATH: &str = ".verzion/changelog_template.md";
 pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
 
 #[derive(Serialize, Deserialize, Debug, Clone, ValueEnum)]
-#[serde(rename_all = "lowercase", tag = "type")]
+#[serde(rename_all = "lowercase")]
 pub enum ChangelogType {
   Simple,
   Template
