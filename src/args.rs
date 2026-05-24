@@ -2,7 +2,7 @@ use std::{env};
 
 use clap::Parser;
 
-use crate::{changelog::config::{ChangelogConfig, ChangelogType}, config::{Config, ToExitCode}, conventions::config::ConvetionTypes, git::tracking::{GitTracking, GitTrackingRoot, GitTrackingStrategy}, log::LogLevel, semver::config::SemVerConfig, std::{option::ToOption, panic::{EXIT_ERROR, EXIT_SUCCESS, ExpectWithStatusCode}}, webhooks::config::{WebhookItemConfig, WebhookType}};
+use crate::{changelog::config::{ChangelogConfig, ChangelogType}, config::{Config, ToExitCode}, conventions::config::ConvetionTypes, git::tracking::{GitTracking, GitTrackingRoot, GitTrackingStrategy}, log::LogLevel, semver::config::{SemVerConfig, SemVerStrategy}, std::{option::ToOption, panic::{EXIT_ERROR, EXIT_SUCCESS, ExpectWithStatusCode}}, webhooks::config::{WebhookItemConfig, WebhookType}};
 
 #[derive(Parser, Debug, Clone)]
 #[command(
@@ -75,6 +75,10 @@ pub struct Args {
   pub semver_iteration: Option<u64>,
   #[arg(long, help = "Force SemVer Metadata", help_heading = "SemVer")]
   pub semver_metadata: Option<Vec<String>>,
+  #[arg(long, help = "Which strategy to use when handling consecutive pre-releases", help_heading = "SemVer")]
+  pub semver_strategy: Option<SemVerStrategy>,
+  #[arg(long, help = "Weather to show/hide zero iterations (e.g. 1.0.0-alpha.0)", help_heading = "SemVer")]
+  pub semver_include_zero_iteration: Option<bool>,
 
   /* webhook */
   #[arg(long, help = "Create a Webhook with origin", help_heading = "Webhook")]
@@ -212,6 +216,8 @@ impl Into<Config> for Args {
       convention: self.convention,
       log_level: self.log_level,
       semver: SemVerConfig::new(
+        self.semver_strategy,
+        self.semver_include_zero_iteration,
         self.semver,
         self.semver_format,
         self.semver_major,

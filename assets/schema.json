@@ -45,6 +45,18 @@
     "semver": {
       "type": "object",
       "properties": {
+        "strategy": {
+          "type": "string",
+          "description": "Which strategy to use when handling consecutive pre-releases",
+          "enum": [
+            "iterate",
+            "increment"
+          ]
+        },
+        "include_zero_iteration": {
+          "type": "boolean",
+          "description": "Weather to show/hide zero iterations (e.g. 1.0.0-alpha.0)"
+        },
         "semver": {
           "type": "string",
           "description": "Force a specifig SemVer (e.g. 1.2.0)"

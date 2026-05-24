@@ -31,6 +31,11 @@ impl SemVer {
 
     is_fullfilled
   }
+
+  pub fn is_prerelease (&self) -> bool {
+    return self.pre_release.is_some();
+  }
+
   pub fn bump (mut self: Self, r#type: &SemVerType) -> Self {
     match r#type {
       SemVerType::Major => {
@@ -46,10 +51,12 @@ impl SemVer {
         self.patch = self.patch.map(|v| v + 1);
       },
       SemVerType::PreRelease => {
-        if self.iteration.is_some() {
-          self.iteration = self.iteration.map(|v| v + 1);
-        } else {
-          self.patch = self.patch.map(|v| v + 1);
+        if self.is_prerelease() {
+          if let Some(iteration) = self.iteration {
+            self.iteration = Some(iteration + 1);
+          } else {
+            self.iteration = Some(1);
+          }
         }
       }
     };
@@ -59,7 +66,7 @@ impl SemVer {
 
   pub fn format (&self, format: &Option<String>) -> String {
     let semver_str = self.to_string();
-    
+
     if let Some(inner_semver_format) = format.clone() {
       return inner_semver_format.replace("{}", &semver_str);
     }
@@ -187,7 +194,7 @@ impl SemVer {
       Ok(value.to_string())
     }
   }
-  
+
   pub fn as_bytes (&self) -> Vec<u8> {
     format!("{}\n", self.to_string()).as_bytes().to_vec()
   }
@@ -271,4 +278,3 @@ impl PartialOrd for SemVer {
     Some(self.cmp(other))
   }
 }
-
