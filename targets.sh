@@ -21,7 +21,7 @@ cargo clean
 
 for target in "${targets[@]}"; do
   echo "Compiling for $target"
-  cross build --target $target --release
+  sudo /root/.cargo/bin/cross build --target $target --release
 
   path="target/$target/release/$name"
 
@@ -32,7 +32,7 @@ for target in "${targets[@]}"; do
     checksum=$(sha256sum $resolved_path | cut -d ' ' -f 1)
     echo $checksum > dist/$name-$target$windows_ending$checksum_ending
 
-    mv $resolved_path dist/$name-$target$windows_ending
+    sudo mv $resolved_path dist/$name-$target$windows_ending
     continue
   fi
 
@@ -40,7 +40,7 @@ for target in "${targets[@]}"; do
     checksum=$(sha256sum $path | cut -d ' ' -f 1)
     echo $checksum > dist/$name-$target$checksum_ending
 
-    mv $path dist/$name-$target
+    sudo mv $path dist/$name-$target
     continue
   fi
 done

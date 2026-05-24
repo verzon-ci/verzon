@@ -50,7 +50,7 @@ pub async fn handle_webhook (
 ) {
   let config = Config::inject();
 
-  for webhook_item in config.webhooks.clone()
+  for webhook_item in config.webhooks.as_ref()
     .expect_with_status_code(
       "No webhook item in webhooks found",
       config.to_exit_code()
@@ -61,6 +61,6 @@ pub async fn handle_webhook (
         &webhook_item
       )
     );
-    handle_webhook_item(&webhook_item, semver, changelog).await;
+    handle_webhook_item(webhook_item, semver, changelog).await;
   }
 }

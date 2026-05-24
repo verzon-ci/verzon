@@ -1,4 +1,4 @@
-use crate::{config::{Config, ToExitCode}, semver::core::SemVer, std::panic::ExpectWithStatusCode, webhooks::{config::WebhookItemConfig, gitea::{http::post_create_release, remote::GiteaRemote}}};
+use crate::{config::{Config, ToExitCode}, semver::core::SemVer, std::panic::ExpectWithStatusCode, webhooks::{config::WebhookItemConfig, gitea::{http::post_create_release}, github::remote::GitHubRemote}};
 
 pub async fn create_release (
     webhook_item: &WebhookItemConfig,
@@ -9,7 +9,7 @@ pub async fn create_release (
 
   let remote_url = webhook_item.get_url().expect_with_status_code("Remote URL absent", config.to_exit_code());
 
-  let gitea_remote = GiteaRemote::try_from(
+  let gitea_remote = GitHubRemote::try_from(
     remote_url.as_ref()
   ).expect_with_status_code("Gitea remote could not be parsed", config.to_exit_code());
 

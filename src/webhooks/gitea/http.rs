@@ -3,22 +3,22 @@ use std::collections::HashMap;
 use reqwest::header::HeaderMap;
 use reqwest_middleware::ClientWithMiddleware;
 
-use crate::{config::{Config, ToExitCode}, http::get_user_agent, log::{log_debug, log_info}, semver::core::SemVer, std::{panic::ExpectWithStatusCode, reqwest::FromWebhookItemConfig}, webhooks::{config::WebhookItemConfig, gitea::remote::GiteaRemote}};
+use crate::{config::{Config, ToExitCode}, http::get_user_agent, log::{log_debug, log_info}, semver::core::SemVer, std::{panic::ExpectWithStatusCode, reqwest::FromWebhookItemConfig}, webhooks::{config::WebhookItemConfig, github::remote::GitHubRemote}};
 
 pub async fn post_create_release (
     webhook_item: &WebhookItemConfig,
-    remote: &GiteaRemote,
+    remote: &GitHubRemote,
     semver: &SemVer,
     changelog: &Option<String>
 ) {
-    let config = Config::inject();
+  let config = Config::inject();
 
-    let url = format!(
-        "{}/api/v1/repos/{}/{}/releases",
-        remote.host,
-        remote.owner,
-        remote.repository
-    );
+  let url = format!(
+      "{}/api/v1/repos/{}/{}/releases",
+      remote.host,
+      remote.owner,
+      remote.repository
+  );
 
   let mut headers = HeaderMap::new();
 

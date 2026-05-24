@@ -74,7 +74,7 @@ pub fn log_raw_error (value: &str, config: &Config) {
     let mut prefix = create_prefix(ERROR_PREFIX);
 
   if config.colored.unwrap_or(true) {
-    prefix = prefix.blue().bold().to_string();
+    prefix = prefix.red().bold().to_string();
   }
 
   let config_log_level = config.log_level.clone().unwrap_or(DEFAULT_LOG_LEVEL);

@@ -24,7 +24,6 @@ pub fn get_remote_url (
     origin
   ]);
 
-
   if let Some(cwd) = options.cwd.as_ref() {
     command.current_dir(cwd);
   }
@@ -35,7 +34,11 @@ pub fn get_remote_url (
     return Err("No remote URL found".to_string());
   }
 
-  String::from_utf8(output.stdout).map_err(|_| "Content contained invalid UTF-8".to_string())
+  let utf8_out = String::from_utf8(output.stdout).map_err(|_| "Content contained invalid UTF-8".to_string())?;
+
+  Ok(
+    utf8_out.trim().to_string()
+  )
 }
 
 pub fn get_remote_names (options: CommandOptions) -> Result<Vec<String>, String> {

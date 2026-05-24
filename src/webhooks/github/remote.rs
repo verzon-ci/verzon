@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use url::Url;
 
 use crate::package::NAME;
@@ -8,6 +6,7 @@ use crate::package::NAME;
 pub struct GitHubRemote {
   #[allow(dead_code)]
   pub url: Url,
+  pub host: String,
   pub owner: String,
   pub repository: String
 }
@@ -32,39 +31,47 @@ impl TryFrom<&str> for GitHubRemote {
   type Error = String;
 
   fn try_from(value: &str) -> Result<Self, Self::Error> {
-    let url = Url::parse(&value).map_err(|_| "URL could not be parsed".to_string())?;
-    let path = Path::new(url.path());
-    let mut owner = None;
-    let mut repository = None;
+    let mut mapped_value = value;
 
-    for component in path.components() {
-      match component {
-        std::path::Component::Normal(value) => {
-          let value = value.to_str();
-
-          if value.is_none() {
-            return Err("Invalid character in URL path".to_string());
-          }
-
-          let value = value.unwrap().to_string();
-
-          if owner.is_none() {
-            owner = Some(value);
-            continue;
-          }
-
-          let len = value.chars().count().saturating_sub(4);
-          let value = value.chars().take(len).collect::<String>();
-          repository = Some(value);
-        },
-        _ => {}
-      }
+    if let Some(stripped) = mapped_value.strip_suffix(".git") {
+      mapped_value = stripped;
     }
 
-    Ok(Self {
-      url,
-      owner: owner.ok_or("Owner not found")?,
-      repository: repository.ok_or("Repository not found")?
-    })
+    let url = Url::parse(mapped_value).map_err(|_| "URL could not be parsed".to_string())?;
+
+    let mut parts = url.path_segments().ok_or("URL has no segments")?.rev();
+
+    let repository = parts.next().ok_or("No repository found")?.to_string();
+    let owner = parts.next().ok_or("No owner found")?.to_string();
+
+    let mut host_parts = parts.collect::<Vec<&str>>();
+    host_parts.reverse();
+    let host_joined_parts = host_parts.join("/");
+    let host_path = if host_joined_parts.is_empty() {
+      ""
+    } else {
+      &format!("/{}", host_joined_parts)
+    };
+
+    let scheme = match url.scheme() {
+      "ssh" => "http",
+      other => other
+    };
+
+    let host = format!(
+      "{}://{}{}",
+      scheme,
+      url.host().ok_or("No host found")?,
+      host_path
+    );
+
+    Ok(
+      Self {
+        url,
+        host,
+        owner,
+        repository
+      }
+    )
   }
 }

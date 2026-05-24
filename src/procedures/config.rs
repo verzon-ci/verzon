@@ -5,7 +5,23 @@ pub fn process_config () {
   let args = Args::parse();
   let mut args_config = <args::Args as Into<Config>>::into(args.clone());
 
+  log_debug_raw(
+    &format!(
+      "Args-Config is:\n{:?}",
+      args_config
+    ),
+    &args_config
+  );
+
   let config = Config::from_args(&args);
+
+  log_debug_raw(
+    &format!(
+      "Config resolved by args is:\n{:?}",
+      config
+    ),
+    &args_config
+  );
 
   match config {
     Ok(inner_config) => {

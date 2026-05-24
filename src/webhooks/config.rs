@@ -37,7 +37,13 @@ impl WebhookItemConfig {
   }
 
   pub fn is_empty (&self) -> bool {
-    self.origin.is_none() && self.enabled.is_none() && self.url.is_none() && self.token.is_none() && self.token_env.is_none() && self.http_retries.is_none()
+    self.origin.is_none()
+      && self.enabled.is_none()
+      && self.url.is_none()
+      && self.token.is_none()
+      && self.token_env.is_none()
+      && self.http_retries.is_none()
+      && self.http_timeout.is_none()
   }
 
   #[allow(dead_code)]
