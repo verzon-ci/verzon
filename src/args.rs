@@ -162,6 +162,7 @@ impl Into<Config> for Args {
       self.webhook_custom_url,
       self.webhook_custom_token,
       self.webhook_custom_token_env,
+      None,
       self.webhook_custom_http_retries,
       self.webhook_custom_http_timeout
     );
@@ -177,6 +178,7 @@ impl Into<Config> for Args {
       self.webhook_gitlab_url,
       self.webhook_gitlab_token,
       self.webhook_gitlab_token_env,
+      None,
       self.webhook_gitlab_http_retries,
       self.webhook_gitlab_http_timeout
     );
@@ -192,6 +194,7 @@ impl Into<Config> for Args {
       self.webhook_github_url,
       self.webhook_github_token,
       self.webhook_github_token_env,
+      None,
       self.webhook_github_http_retries,
       self.webhook_github_http_timeout
     );

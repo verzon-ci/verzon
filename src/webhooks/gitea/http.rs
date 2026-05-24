@@ -14,10 +14,10 @@ pub async fn post_create_release (
   let config = Config::inject();
 
   let url = format!(
-      "{}/api/v1/repos/{}/{}/releases",
-      remote.host,
-      remote.owner,
-      remote.repository
+    "{}/api/v1/repos/{}/{}/releases",
+    remote.host,
+    remote.owner,
+    remote.repository
   );
 
   let mut headers = HeaderMap::new();

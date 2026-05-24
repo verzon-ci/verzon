@@ -1,5 +1,6 @@
 use std::env;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::{config::Config, git::remote::get_remote_url, std::command::CommandOptions, webhooks::{custom, gitea, github, gitlab}};
 
@@ -13,13 +14,64 @@ pub enum WebhookType {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct WebhookUrlOverrides {
+  scheme: Option<String>,
+  username: Option<String>,
+  password: Option<String>,
+  fragment: Option<String>,
+  host: Option<String>,
+  path: Option<String>,
+  port: Option<u16>,
+  query: Option<String>
+}
+
+impl WebhookUrlOverrides {
+  fn patch_url (&self, url: &mut Url) -> Result<(), String> {
+    if let Some(scheme) = self.scheme.as_ref() {
+      url.set_scheme(scheme).map_err(|_| "Couldn't set scheme")?;
+    }
+
+    if let Some(username) = self.username.as_ref() {
+      url.set_username(username).map_err(|_| "Couldn't set username")?;
+    }
+
+    if let Some(password) = self.password.as_ref() {
+      url.set_password(Some(password)).map_err(|_| "Couldn't set password")?;
+    }
+
+    if let Some(fragment) = self.fragment.as_ref() {
+      url.set_fragment(Some(fragment));
+    }
+
+    if let Some(host) = self.host.as_ref() {
+      url.set_host(Some(host)).map_err(|_| "Couldn't set host")?;
+    }
+
+    if let Some(path) = self.path.as_ref() {
+      url.set_path(path);
+    }
+
+    if let Some(port) = self.port.as_ref() {
+      url.set_port(Some(*port)).map_err(|_| "Couldn't set scheme")?;
+    }
+
+    if let Some(query) = self.query.as_ref() {
+      url.set_query(Some(query));
+    }
+
+    Ok(())
+  }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct WebhookItemConfig {
   pub r#type: Option<WebhookType>,
   pub origin: Option<String>,
   pub enabled: Option<bool>,
-  pub url: Option<String>,
+  pub remote_url: Option<String>,
   pub token: Option<String>,
   pub token_env: Option<String>,
+  pub overrides: Option<WebhookUrlOverrides>,
   pub http_retries: Option<u32>,
   pub http_timeout: Option<u64>
 }
@@ -39,7 +91,7 @@ impl WebhookItemConfig {
   pub fn is_empty (&self) -> bool {
     self.origin.is_none()
       && self.enabled.is_none()
-      && self.url.is_none()
+      && self.remote_url.is_none()
       && self.token.is_none()
       && self.token_env.is_none()
       && self.http_retries.is_none()
@@ -51,9 +103,10 @@ impl WebhookItemConfig {
     r#type: Option<WebhookType>,
     origin: Option<String>,
     enabled: Option<bool>,
-    url: Option<String>,
+    remote_url: Option<String>,
     token: Option<String>,
     token_env: Option<String>,
+    overrides: Option<WebhookUrlOverrides>,
     http_retries: Option<u32>,
     http_timeout: Option<u64>
   ) -> Option<Self> {
@@ -61,9 +114,10 @@ impl WebhookItemConfig {
       r#type,
       origin,
       enabled,
-      url,
+      remote_url,
       token,
       token_env,
+      overrides,
       http_retries,
       http_timeout
     };
@@ -95,7 +149,7 @@ impl WebhookItemConfig {
   }
 
   pub fn get_url (&self) -> Result<String, String> {
-    if let Some(inner_url) = self.url.as_ref() {
+    if let Some(inner_url) = self.remote_url.as_ref() {
       return Ok(inner_url.clone());
     }
 

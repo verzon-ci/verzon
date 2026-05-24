@@ -37,7 +37,7 @@ pub async fn post_create_release (
   let client = ClientWithMiddleware::from_webhook_item_config(webhook_item);
 
   client.post(
-    webhook_item.url
+    webhook_item.remote_url
       .as_ref()
       .expect_with_status_code(
         "Webhook URL is not set",

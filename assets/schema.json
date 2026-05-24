@@ -174,9 +174,9 @@
             "description": "Flag to enable/disable a webhook",
             "default": false
           },
-          "url": {
+          "remote_url": {
             "type": "string",
-            "description": "Override the url to a webhook"
+            "description": "Override the url to a webhook (pre-parsing)"
           },
           "token": {
             "type": "string",
@@ -185,6 +185,44 @@
           "token_env": {
             "type": "string",
             "description": "Name of an environment var, that'ld be used as a token"
+          },
+          "overrides": {
+            "type": "object",
+            "description": "Override webhook url parts",
+            "properties": {
+              "scheme": {
+                "type": "string",
+                "description": "Protocol to override (e.g. ssh, http)"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username, that'll be used for authorisation"
+              },
+              "password": {
+                "type": "string",
+                "description": "Password, that'll be used for authorisation"
+              },
+              "fragment": {
+                "type": "string",
+                "description": "Fragment at the end of url"
+              },
+              "host": {
+                "type": "string",
+                "description": "Host where requests'ld go to"
+              },
+              "path": {
+                "type": "string",
+                "description": "Path for the url"
+              },
+              "port": {
+                "type": "integer",
+                "description": "Port, where requests'ld go to"
+              },
+              "query": {
+                "type": "string",
+                "description": "Query params, that'ld be included"
+              }
+            }
           },
           "http_retries": {
             "type": "integer",

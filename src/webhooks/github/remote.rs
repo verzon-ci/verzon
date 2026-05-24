@@ -58,10 +58,18 @@ impl TryFrom<&str> for GitHubRemote {
       other => other
     };
 
+    let raw_host = url.host().ok_or("No host found")?;
+
+    let host = if let Some(port) = url.port() {
+      format!("{}:{}", raw_host, port)
+    } else {
+      raw_host.to_string()
+    };
+
     let host = format!(
       "{}://{}{}",
       scheme,
-      url.host().ok_or("No host found")?,
+      host,
       host_path
     );
 
