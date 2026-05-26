@@ -1,10 +1,9 @@
 #[repr(u8)]
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SemVerType {
-  Major = 4,
-  Minor = 3,
-  Patch = 2,
-  PreRelease = 1
+  Major = 3,
+  Minor = 2,
+  Patch = 1
 }
 
 impl SemVerType {
@@ -18,8 +17,7 @@ impl ToString for SemVerType {
     match self {
       Self::Major => "major".to_string(),
       Self::Minor => "minor".to_string(),
-      Self::Patch => "patch".to_string(),
-      Self::PreRelease => "pre-release".to_string()
+      Self::Patch => "patch".to_string()
     }
   }
 }

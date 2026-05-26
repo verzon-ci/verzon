@@ -49,17 +49,22 @@ impl SemVer {
       },
       SemVerType::Patch => {
         self.patch = self.patch.map(|v| v + 1);
-      },
-      SemVerType::PreRelease => {
-        if self.is_prerelease() {
-          if let Some(iteration) = self.iteration {
-            self.iteration = Some(iteration + 1);
-          } else {
-            self.iteration = Some(1);
-          }
-        }
       }
     };
+
+    self
+  }
+
+  pub fn remove_pre_release (mut self) -> Self {
+    self.pre_release = None;
+
+    self
+  }
+
+  pub fn iterate (mut self) -> Self {
+    self.iteration = self.iteration
+      .map(|inner_iteration| inner_iteration + 1)
+      .or(Some(1));
 
     self.clone()
   }
@@ -243,6 +248,11 @@ impl ToString for &SemVer {
         value = value
           + &format!(".{}", iteration);
       }
+    }
+
+    if let Some(metadata) = self.metadata.as_ref() {
+      value = value
+        + &format!("+{}", metadata.join("."));
     }
 
     return value;
