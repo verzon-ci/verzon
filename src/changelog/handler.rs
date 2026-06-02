@@ -1,7 +1,4 @@
-use crate::{changelog::{config::{ChangelogType, DEFAULT_CHANGELOG_TYPE, DEFAULT_TEMPLATE_PATH}, generation::{simple, template}, utils::get_contributors}, config::Config, conventions::{config::ConvetionTypes, conventional::{self}}, fs::write_str_to_file, git::log::GitLog};
-
-#[allow(dead_code)]
-const DEFAULT_CHANGELOG_FILENAME: &str = "CHANGELOG.md";
+use crate::{changelog::{config::{ChangelogType, DEFAULT_CHANGELOG_TYPE, DEFAULT_TEMPLATE_PATH}, generation::{simple, template}, utils::get_contributors}, config::Config, conventions::{config::ConvetionTypes, conventional::{self}}, git::log::GitLog};
 
 pub fn generate_changelog (logs: &Vec<GitLog>) -> String {
   let config = Config::inject();
@@ -34,12 +31,4 @@ pub fn generate_changelog (logs: &Vec<GitLog>) -> String {
       );
     }
   }
-}
-
-#[allow(dead_code)]
-pub fn write_changelog (changelog: &str) {
-  let config = Config::inject();
-  let path = config.changelog.clone().unwrap().path.unwrap_or(DEFAULT_CHANGELOG_FILENAME.to_string());
-
-  write_str_to_file(path.as_str(), changelog);
 }

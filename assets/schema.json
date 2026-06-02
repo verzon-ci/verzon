@@ -107,6 +107,10 @@
               "plain"
             ]
           },
+          "enabled": {
+            "type": "boolean",
+            "description": "Weather metafile is enabled/disabled"
+          },
           "path": {
             "type": "string",
             "description": "Path to metafile"

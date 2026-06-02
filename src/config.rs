@@ -1,8 +1,8 @@
-use std::{fs, path::PathBuf, str::FromStr};
+use std::{env, fs, path::PathBuf, str::FromStr};
 use once_cell::sync::{OnceCell};
 use serde::{Deserialize, Serialize};
 
-use crate::{args::Args, changelog::config::ChangelogConfig, conventions::config::ConventionConfig, git::tracking::GitTrackingRoot, log::LogLevel, metafile::config::Metafile, package::NAME, semver::config::SemVerConfig, std::{merge::Merge, panic::{EXIT_ERROR, EXIT_SUCCESS}}, webhooks::config::WebhookConfig};
+use crate::{args::Args, changelog::config::ChangelogConfig, conventions::config::ConventionConfig, git::tracking::GitTrackingRoot, log::LogLevel, metafile::config::Metafile, package::NAME, semver::config::SemVerConfig, std::{merge::Merge, panic::{EXIT_ERROR, EXIT_SUCCESS, ExpectWithStatusCode}}, webhooks::config::WebhookConfig};
 
 pub const DEFAULT_CONFIG_FILE_EXTENSION: &str = "json";
 pub const DEFAULT_CONFIG_FILE_BASE: &str = "config";
@@ -54,9 +54,18 @@ impl Config {
 
     if path_buf.is_none() {
       path_buf = Some(PathBuf::from_str(&args.get_cwd())
-          .map_err(|_| "Could not parse cwd".to_string())?
-          .join(get_default_config_dir())
-          .join(get_default_config_file_name()))
+        .map_err(|_| "Could not parse cwd".to_string())?
+        .join(
+          args.config_dir.as_ref().unwrap_or(
+            &get_default_config_dir()
+          )
+        )
+        .join(
+          args.config_name.as_ref().unwrap_or(
+            &get_default_config_file_name()
+          )
+        )
+      )
     }
 
     let content_buf = fs::read(path_buf.ok_or("Couldn't get config path")?)
@@ -64,6 +73,31 @@ impl Config {
 
     serde_json::from_slice::<Config>(&content_buf)
       .map_err(|err| format!("{}\n{:?}", "Couldn't parse config file", err))
+  }
+
+  pub fn get_cwd (&self) -> String {
+    self.cwd.clone().unwrap_or(
+      env::current_dir()
+      .expect_with_status_code(
+        "Could not get current working directory",
+        self.to_exit_code()
+      )
+      .to_str()
+      .expect_with_status_code(
+        "Could not convert cwd path since it contains invalid charset",
+        self.to_exit_code()
+      )
+      .to_string()
+    )
+  }
+
+  pub fn get_cwd_as_path_buf (&self) -> PathBuf {
+    PathBuf::from_str(
+      &self.get_cwd()
+    ).expect_with_status_code(
+      "Couldn't get pathbuf from cwd",
+      self.to_exit_code()
+    )
   }
 }
 

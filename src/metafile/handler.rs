@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::{config::Config, git::tracking::GitTrackingBatch, log::log_debug, metafile::{config::MetafileTypes, git::get_commit_msg, java, node, plain}, semver::core::SemVer};
+use crate::{config::Config, git::tracking::GitTrackingBatch, log::log_debug, metafile::{config::{DEFAULT_METAFILE_ENABLED, MetafileTypes}, git::get_commit_msg, java, node, plain}, semver::core::SemVer};
 
 pub struct HandleMetafilesResult {
   pub tracking_batch: GitTrackingBatch
@@ -13,6 +13,10 @@ pub fn handle_metafile (semver: &SemVer) -> Result<HandleMetafilesResult, String
 
   if let Some(inner_metafiles) = config.metafiles.as_ref() {
     for metafile in inner_metafiles {
+      if !metafile.enabled.unwrap_or(DEFAULT_METAFILE_ENABLED) {
+        continue;
+      }
+
       let mut path = Path::new(&metafile.path).to_path_buf();
 
       if !path.is_absolute() && let Some(inner_cwd) = &config.cwd {

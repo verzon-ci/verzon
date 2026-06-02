@@ -17,6 +17,8 @@ pub struct Args {
   pub config: Option<String>,
   #[arg(long, help = "Dir of configuration file", help_heading = "General")]
   pub config_dir: Option<String>,
+  #[arg(long, help = "Name of configuration file", help_heading = "General")]
+  pub config_name: Option<String>,
   #[arg(long, help = "Path to run onto", help_heading = "General")]
   pub cwd: Option<String>,
   #[arg(long, help = "Exit gracefully", help_heading = "General")]
@@ -124,7 +126,22 @@ pub struct Args {
   #[arg(long, help = "Create a Webhook with HTTP retries", help_heading = "Webhook")]
   pub webhook_github_http_retries: Option<u32>,
   #[arg(long, help = "Create a Webhook with HTTP retries", help_heading = "Webhook")]
-  pub webhook_github_http_timeout: Option<u64>
+  pub webhook_github_http_timeout: Option<u64>,
+
+  #[arg(long, help = "Create a Webhook with enablement", help_heading = "Webhook")]
+  pub webhook_gitea_origin: Option<String>,
+  #[arg(long, help = "Create a Webhook with enablement", help_heading = "Webhook")]
+  pub webhook_gitea_enabled: Option<bool>,
+  #[arg(long, help = "Create a Webhook with url", help_heading = "Webhook")]
+  pub webhook_gitea_url: Option<String>,
+  #[arg(long, help = "Create a Webhook with token", help_heading = "Webhook")]
+  pub webhook_gitea_token: Option<String>,
+  #[arg(long, help = "Create a Webhook with token env", help_heading = "Webhook")]
+  pub webhook_gitea_token_env: Option<String>,
+  #[arg(long, help = "Create a Webhook with HTTP retries", help_heading = "Webhook")]
+  pub webhook_gitea_http_retries: Option<u32>,
+  #[arg(long, help = "Create a Webhook with HTTP retries", help_heading = "Webhook")]
+  pub webhook_gitea_http_timeout: Option<u64>
 }
 
 impl Args {
@@ -166,7 +183,6 @@ impl Into<Config> for Args {
       self.webhook_custom_url,
       self.webhook_custom_token,
       self.webhook_custom_token_env,
-      None,
       self.webhook_custom_http_retries,
       self.webhook_custom_http_timeout
     );
@@ -182,7 +198,6 @@ impl Into<Config> for Args {
       self.webhook_gitlab_url,
       self.webhook_gitlab_token,
       self.webhook_gitlab_token_env,
-      None,
       self.webhook_gitlab_http_retries,
       self.webhook_gitlab_http_timeout
     );
@@ -198,12 +213,26 @@ impl Into<Config> for Args {
       self.webhook_github_url,
       self.webhook_github_token,
       self.webhook_github_token_env,
-      None,
       self.webhook_github_http_retries,
       self.webhook_github_http_timeout
     );
 
     if let Some(value) = github {
+      webhook_config.push(value);
+    }
+
+    let gitea = WebhookItemConfig::new(
+      Some(WebhookType::Gitea),
+      self.webhook_gitea_origin,
+      self.webhook_gitea_enabled,
+      self.webhook_gitea_url,
+      self.webhook_gitea_token,
+      self.webhook_gitea_token_env,
+      self.webhook_gitea_http_retries,
+      self.webhook_gitea_http_timeout
+    );
+
+    if let Some(value) = gitea {
       webhook_config.push(value);
     }
 

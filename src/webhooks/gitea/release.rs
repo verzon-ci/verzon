@@ -1,9 +1,9 @@
 use crate::{config::{Config, ToExitCode}, semver::core::SemVer, std::panic::ExpectWithStatusCode, webhooks::{config::WebhookItemConfig, gitea::{http::post_create_release}, github::remote::GitHubRemote}};
 
 pub async fn create_release (
-    webhook_item: &WebhookItemConfig,
-    semver: &SemVer,
-    changelog: &Option<String>
+  webhook_item: &WebhookItemConfig,
+  semver: &SemVer,
+  changelog: &Option<String>
 ) {
   let config = Config::inject();
 

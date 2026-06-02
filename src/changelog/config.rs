@@ -3,8 +3,9 @@ use clap::ValueEnum;
 use crate::{git::tracking::{GitTracking}, std::merge::Merge};
 
 pub const DEFAULT_CHANGELOG_TYPE: ChangelogType = ChangelogType::Simple;
-pub const DEFAULT_TEMPLATE_PATH: &str = ".verzion/changelog_template.md";
-pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
+pub const DEFAULT_TEMPLATE_PATH: &str = ".verzion/changelog-template.md";
+pub const DEFAULT_CHANGELOG_FILENAME: &str = "CHANGELOG.md";
+pub const DEFAULT_CHANGELOG_ENABLED: bool = true;
 
 #[derive(Serialize, Deserialize, Debug, Clone, ValueEnum)]
 #[serde(rename_all = "lowercase")]
